@@ -4,9 +4,11 @@
 
 
 int main(void) {
-    char* sBoardInput = (char*)calloc(81 + 1, sizeof(char));
+    char* sBoardInput = (char*)calloc(81 + 2, sizeof(char));
+
     printf("Board input: ");
     fgets(sBoardInput, 81 + 2, stdin);
+    
     int* board = ParseBoard(sBoardInput);
     free(sBoardInput);
 

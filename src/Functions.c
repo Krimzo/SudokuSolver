@@ -6,7 +6,7 @@
 int boardEmptyCount = 0;
 
 int* ParseBoard(char* boardAsString) {
-    if (strlen(boardAsString) < 81) {
+    if (strlen(boardAsString) < 82) {
         printf("Board input is too short!\nPress any key to exit..");
         getchar();
         exit(0);
@@ -26,9 +26,6 @@ int* ParseBoard(char* boardAsString) {
         }
         else if (*(boardAsString + i) > 48 && *(boardAsString + i) < 58) {
             *(boardAsInt + i) = *(boardAsString + i) - 48;
-        }
-        else if (*(boardAsString + i) == '\n') {
-            break;
         }
         else {
             free(boardAsInt);
@@ -61,94 +58,21 @@ void PrintBoard(int* boardAsInt) {
     }
 }
 
-int diagonalsSolved = 0;
 void SolveSudoku(int* boardAsInt) {
     while (boardEmptyCount != 0) {
         int tempEmptyCount = boardEmptyCount;
         /* Solving START */
-        if (!diagonalsSolved) {
-            SolveDiagonals(boardAsInt);
-        }
         SolveRows(boardAsInt);
         SolveCols(boardAsInt);
-        for (int y = 0; y < 3; y++) {
-            for (int x = 0; x < 3; x++) {
-                SolveSquare(boardAsInt, (y * 3 * 9) + x * 3);
+        for (int y = 0; y <= 54; y += 27) {
+            for (int x = 0; x <= 6; x += 3) {
+                SolveSquare(boardAsInt, y, x);
             }
         }
         /* Solving END */
         if (boardEmptyCount == tempEmptyCount) {
             break;
         }
-    }
-}
-
-int mainDiagonalSolved = 0;
-int antidiagonalSolved = 0;
-void SolveDiagonals(int* boardAsInt) {
-    // Main diagonal
-    int mainEmptyCount = 0;
-    int mainNonEmptySum = 0;
-    int* mainEmptyPosition = NULL;
-    // Count empty
-    for (int i = 0; i < 9; i++) {
-        // Check if spot is empty
-        if (*(boardAsInt + (9 * i + i)) == 0) {
-            mainEmptyCount++;
-            mainEmptyPosition = boardAsInt + (9 * i + i);
-        }
-        // Add to sum if it's not empty
-        else {
-            mainNonEmptySum += *(boardAsInt + (9 * i + i));
-        }
-        // Breka the loop if there is more than 1 empty space
-        if (mainEmptyCount > 1) {
-            break;
-        }
-    }
-    // Solve if there is only 1 empty space left
-    if (mainEmptyCount == 1) {
-        *mainEmptyPosition = 45 - mainNonEmptySum;
-        boardEmptyCount--;
-        mainDiagonalSolved = 1;
-    }
-    else if (mainEmptyCount == 0) {
-        mainDiagonalSolved = 1;
-    }
-
-    // Antidiagonal
-    int antidiagonalEmptyCount = 0;
-    int antidiagonalNonEmptySum = 0;
-    int* antidiagonalEmptyPosition = NULL;
-    // Count empty
-    for (int i = 0; i < 9; i++) {
-        // Check if spot is empty
-        if (*(boardAsInt + (9 * (8 - i) + i)) == 0) {
-            antidiagonalEmptyCount++;
-            antidiagonalEmptyPosition = boardAsInt + (9 * (8 - i) + i);
-        }
-        // Add to sum if it's not empty
-        else {
-            antidiagonalNonEmptySum += *(boardAsInt + (9 * (8 - i) + i));
-        }
-        // Breka the loop if there is more than 1 empty space
-        if (antidiagonalEmptyCount > 1) {
-            break;
-        }
-    }
-    // Solve if there is only 1 empty space left 
-    if (antidiagonalEmptyCount == 1) {
-        *antidiagonalEmptyPosition = 45 - antidiagonalNonEmptySum;
-        boardEmptyCount--;
-        antidiagonalSolved = 1;
-    }
-    else if (antidiagonalEmptyCount == 0) {
-        antidiagonalSolved = 1;
-    }
-
-    // Doesn't need explaining
-    if (mainDiagonalSolved && antidiagonalSolved) {
-        diagonalsSolved = 1;
     }
 }
 
@@ -212,11 +136,73 @@ void SolveCols(int* boardAsInt) {
     }
 }
 
-void SolveSquare(int* boardAsInt, int position) {
+void SolveSquare(int* boardAsInt, int squareY, int squareX) {
+    // Loop through square y
     for (int y = 0; y < 3; y++) {
+        // Loop through square x
         for (int x = 0; x < 3; x++) {
-
+            int currentCellPosition = (squareY + squareX) + y * 9 + x;
+            int* currentCell = boardAsInt + currentCellPosition;
+            // Check if the cell is empty
+            if (*currentCell == 0) {
+                // Loop through possible numbers
+                for (int i = 1; i <= 9; i++) {
+                    // Check if number already exist in the square, row and column
+                    if (!IsInSquare(boardAsInt, (squareY + squareX), i) && !IsInRow(boardAsInt, squareY + (y * 9), i) && !IsInCol(boardAsInt, squareX + x, i)) {
+                        // Check if only 1 cell in the square can contain that number(i)
+                        if (ViableNumberOptionsInSquare(boardAsInt, squareY, squareX, i) == 1) {
+                            *currentCell = i;
+                            boardEmptyCount--;
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
+}
+
+int IsInSquare(int* boardAsInt, int squarePosition, int number) {
+    for (int y = 0; y < 3; y++) {
+        for (int x = 0; x < 3; x++) {
+            if (*(boardAsInt + (squarePosition + y * 9 + x)) == number) {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+int IsInRow(int* boardAsInt, int row, int number) {
+    for (int i = 0; i < 9; i++) {
+        if (*(boardAsInt + (row + i)) == number) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int IsInCol(int* boardAsInt, int col, int number) {
+    for (int i = 0; i < 9; i++) {
+        if (*(boardAsInt + (i * 9 + col)) == number) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int ViableNumberOptionsInSquare(int* boardAsInt, int squareY, int squareX, int number) {
+    int n = 0;
+    int currentCellPosition;
+    for (int y = 0; y < 3; y++) {
+        for (int x = 0; x < 3; x++) {
+            currentCellPosition = (squareY + squareX) + y * 9 + x;
+            int* currentCell = boardAsInt + currentCellPosition;
+            if (*currentCell == 0 && !IsInRow(boardAsInt, squareY + (y * 9), number) && !IsInCol(boardAsInt, squareX + x, number)) {
+                n++;
+            }
+        }
+    }
+    return n;
 }
 
