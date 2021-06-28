@@ -94,7 +94,7 @@ void SolveDiagonals(int* boardAsInt) {
         boardEmptyCount--;
         mainDiagonalSolved = 1;
     }
-    if (mainEmptyCount == 0) {
+    else if (mainEmptyCount == 0) {
         mainDiagonalSolved = 1;
     }
 
@@ -124,7 +124,7 @@ void SolveDiagonals(int* boardAsInt) {
         boardEmptyCount--;
         antidiagonalSolved = 1;
     }
-    if (antidiagonalEmptyCount == 0) {
+    else if (antidiagonalEmptyCount == 0) {
         antidiagonalSolved = 1;
     }
 
@@ -159,6 +159,7 @@ void SolveRows(int* boardAsInt) {
         // Solve if there is only 1 empty space left 
         if (emptyCount == 1) {
             *emptyPosition = 45 - nonEmptySum;
+            boardEmptyCount--;
         }
     }
 }
@@ -188,6 +189,7 @@ void SolveCols(int* boardAsInt) {
         // Solve if there is only 1 empty space left
         if (emptyCount == 1) {
             *emptyPosition = 45 - nonEmptySum;
+            boardEmptyCount--;
         }
     }
 }
