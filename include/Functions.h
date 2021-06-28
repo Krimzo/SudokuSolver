@@ -10,6 +10,6 @@ void SolveSudoku(int*);
 void SolveDiagonals(int*);
 void SolveRows(int*);
 void SolveCols(int*);
-
+void SolveSquare(int*, int);
 
 #endif

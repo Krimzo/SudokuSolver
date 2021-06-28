@@ -42,7 +42,12 @@ int* ParseBoard(char* boardAsString) {
 }
 
 void PrintBoard(int* boardAsInt) {
-    printf("Output board:\n");
+    if (boardEmptyCount != 0) {
+        printf("Couldn't solve sudoku completely(%d empty spaces left):\n", boardEmptyCount);
+    }
+    else {
+        printf("Solved sudoku:\n");
+    }
     for (int i = 0; i < 81; i++) {
         if (*(boardAsInt + i) == 0) {
             printf("  ");
@@ -58,11 +63,24 @@ void PrintBoard(int* boardAsInt) {
 
 int diagonalsSolved = 0;
 void SolveSudoku(int* boardAsInt) {
-    if (!diagonalsSolved) {
-        SolveDiagonals(boardAsInt);
+    while (boardEmptyCount != 0) {
+        int tempEmptyCount = boardEmptyCount;
+        /* Solving START */
+        if (!diagonalsSolved) {
+            SolveDiagonals(boardAsInt);
+        }
+        SolveRows(boardAsInt);
+        SolveCols(boardAsInt);
+        for (int y = 0; y < 3; y++) {
+            for (int x = 0; x < 3; x++) {
+                SolveSquare(boardAsInt, (y * 3 * 9) + x * 3);
+            }
+        }
+        /* Solving END */
+        if (boardEmptyCount == tempEmptyCount) {
+            break;
+        }
     }
-    SolveRows(boardAsInt);
-    SolveCols(boardAsInt);
 }
 
 int mainDiagonalSolved = 0;
@@ -194,5 +212,11 @@ void SolveCols(int* boardAsInt) {
     }
 }
 
+void SolveSquare(int* boardAsInt, int position) {
+    for (int y = 0; y < 3; y++) {
+        for (int x = 0; x < 3; x++) {
 
+        }
+    }
+}
 
