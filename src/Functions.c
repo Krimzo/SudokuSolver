@@ -3,7 +3,7 @@
 #include <string.h>
 #include "../include/Functions.h"
 
-int missingNumbers = 0;
+int boardEmptyCount = 0;
 
 int* ParseBoard(char* boardAsString) {
     if (strlen(boardAsString) < 81) {
@@ -22,7 +22,7 @@ int* ParseBoard(char* boardAsString) {
     for (int i = 0; i < 81; i++) {
         if (*(boardAsString + i) == '/' || *(boardAsString + i) == '0') {
             *(boardAsInt + i) = 0;
-            missingNumbers++;
+            boardEmptyCount++;
         }
         else if (*(boardAsString + i) > 48 && *(boardAsString + i) < 58) {
             *(boardAsInt + i) = *(boardAsString + i) - 48;
@@ -88,9 +88,13 @@ void SolveDiagonals(int* boardAsInt) {
             break;
         }
     }
-    // Solve main diagonal if there is only 1 
+    // Solve if there is only 1 empty space left
     if (mainEmptyCount == 1) {
         *mainEmptyPosition = 45 - mainNonEmptySum;
+        boardEmptyCount--;
+        mainDiagonalSolved = 1;
+    }
+    if (mainEmptyCount == 0) {
         mainDiagonalSolved = 1;
     }
 
@@ -114,9 +118,13 @@ void SolveDiagonals(int* boardAsInt) {
             break;
         }
     }
-    // Solve main diagonal if there is only 1 
+    // Solve if there is only 1 empty space left 
     if (antidiagonalEmptyCount == 1) {
         *antidiagonalEmptyPosition = 45 - antidiagonalNonEmptySum;
+        boardEmptyCount--;
+        antidiagonalSolved = 1;
+    }
+    if (antidiagonalEmptyCount == 0) {
         antidiagonalSolved = 1;
     }
 
@@ -127,11 +135,61 @@ void SolveDiagonals(int* boardAsInt) {
 }
 
 void SolveRows(int* boardAsInt) {
-
+    for (int y = 0; y < 9; y++) {
+        // Main diagonal
+        int emptyCount = 0;
+        int nonEmptySum = 0;
+        int* emptyPosition = NULL;
+        // Count empty
+        for (int x = 0; x < 9; x++) {
+            // Check if spot is empty
+            if (*(boardAsInt + (9 * y + x)) == 0) {
+                emptyCount++;
+                emptyPosition = boardAsInt + (9 * y + x);
+            }
+            // Add to sum if it's not empty
+            else {
+                nonEmptySum += *(boardAsInt + (9 * y + x));
+            }
+            // Break the loop if there is more than 1 empty space
+            if (emptyCount > 1) {
+                break;
+            }
+        }
+        // Solve if there is only 1 empty space left 
+        if (emptyCount == 1) {
+            *emptyPosition = 45 - nonEmptySum;
+        }
+    }
 }
 
 void SolveCols(int* boardAsInt) {
-
+    for (int x = 0; x < 9; x++) {
+        // Main diagonal
+        int emptyCount = 0;
+        int nonEmptySum = 0;
+        int* emptyPosition = NULL;
+        // Count empty
+        for (int y = 0; y < 9; y++) {
+            // Check if spot is empty
+            if (*(boardAsInt + (9 * y + x)) == 0) {
+                emptyCount++;
+                emptyPosition = boardAsInt + (9 * y + x);
+            }
+            // Add to sum if it's not empty
+            else {
+                nonEmptySum += *(boardAsInt + (9 * y + x));
+            }
+            // Break the loop if there is more than 1 empty space
+            if (emptyCount > 1) {
+                break;
+            }
+        }
+        // Solve if there is only 1 empty space left
+        if (emptyCount == 1) {
+            *emptyPosition = 45 - nonEmptySum;
+        }
+    }
 }
 
 

@@ -2,7 +2,7 @@
 #define FUNCTIONS_H
 
 
-extern int missingNumbers;
+extern int boardEmptyCount;
 
 int* ParseBoard(char*);
 void PrintBoard(int*);

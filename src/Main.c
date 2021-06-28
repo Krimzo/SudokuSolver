@@ -12,7 +12,7 @@ int main(void) {
 
     SolveSudoku(board);
 
-    printf("Missing numbers: %d\n", missingNumbers);
+    printf("Missing numbers: %d\n", boardEmptyCount);
     PrintBoard(board);
 
     free(board);
