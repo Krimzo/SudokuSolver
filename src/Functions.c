@@ -6,7 +6,7 @@
 int boardEmptyCount = 0;
 
 int* ParseBoard(char* boardAsString) {
-    if (strlen(boardAsString) < 82) {
+    if (strlen(boardAsString) != 82) {
         printf("Board input is too short!\nPress any key to exit..");
         getchar();
         exit(0);
@@ -141,8 +141,7 @@ void SolveSquare(int* boardAsInt, int squareY, int squareX) {
     for (int y = 0; y < 3; y++) {
         // Loop through square x
         for (int x = 0; x < 3; x++) {
-            int currentCellPosition = (squareY + squareX) + y * 9 + x;
-            int* currentCell = boardAsInt + currentCellPosition;
+            int* currentCell = boardAsInt + ((squareY + squareX) + y * 9 + x);
             // Check if the cell is empty
             if (*currentCell == 0) {
                 // Loop through possible numbers
@@ -193,11 +192,9 @@ int IsInCol(int* boardAsInt, int col, int number) {
 
 int ViableNumberOptionsInSquare(int* boardAsInt, int squareY, int squareX, int number) {
     int n = 0;
-    int currentCellPosition;
     for (int y = 0; y < 3; y++) {
         for (int x = 0; x < 3; x++) {
-            currentCellPosition = (squareY + squareX) + y * 9 + x;
-            int* currentCell = boardAsInt + currentCellPosition;
+            int* currentCell = boardAsInt + ((squareY + squareX) + y * 9 + x);
             if (*currentCell == 0 && !IsInRow(boardAsInt, squareY + (y * 9), number) && !IsInCol(boardAsInt, squareX + x, number)) {
                 n++;
             }
