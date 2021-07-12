@@ -2,9 +2,7 @@
 #define FUNCTIONS_H
 
 
-extern int boardEmptyCount;
-
-int* ParseBoard(char*);
+int ParseBoard(char*, int*);
 void PrintBoard(int*);
 void SolveSudoku(int*);
 void SolveRows(int*);

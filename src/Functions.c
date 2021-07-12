@@ -3,44 +3,46 @@
 #include <string.h>
 #include "../include/Functions.h"
 
-int boardEmptyCount = 0;
+int boardEmptyCount;
 
-int* ParseBoard(char* boardAsString) {
-    if (strlen(boardAsString) != 82) {
-        printf("Board input is too short!\nPress any key to exit..");
+int ParseBoard(char* boardAsChar, int* boardAsInt) {
+    // Reset board count
+    boardEmptyCount = 0;
+
+    // Check if string is the right size
+    if (strlen(boardAsChar) != 81) {
+        printf("Board input is too short!");
         getchar();
-        exit(0);
+        system("cls");
+        return 1;
     }
 
-    int* boardAsInt = (int*)calloc(81, sizeof(int));
-    if (boardAsInt == NULL) {
-        printf("Coudln't allocate memoery for the board!\nPress ENTER to exit..");
-        getchar();
-        exit(-1);
-    }
-
+    // String parsing
     for (int i = 0; i < 81; i++) {
-        if (*(boardAsString + i) == '/' || *(boardAsString + i) == '0') {
+        // Empty cells
+        if (*(boardAsChar + i) == '/' || *(boardAsChar + i) == '0') {
             *(boardAsInt + i) = 0;
             boardEmptyCount++;
         }
-        else if (*(boardAsString + i) > 48 && *(boardAsString + i) < 58) {
-            *(boardAsInt + i) = *(boardAsString + i) - 48;
+        // Cells with numbers in them
+        else if (*(boardAsChar + i) > 48 && *(boardAsChar + i) < 58) {
+            *(boardAsInt + i) = *(boardAsChar + i) - 48;
         }
+        // Bad input
         else {
-            free(boardAsInt);
-            printf("Bad board input!\nPress any key to exit..");
+            printf("Bad board input!");
             getchar();
-            exit(0);
+            system("cls");
+            return 1;
         }
     }
-
-    return boardAsInt;
+    return 0;
 }
 
+// Print sudoku board to the screen
 void PrintBoard(int* boardAsInt) {
     if (boardEmptyCount != 0) {
-        printf("Couldn't solve sudoku completely(%d empty spaces left):\n", boardEmptyCount);
+        printf("%d/81 empty spaces:\n", boardEmptyCount);
     }
     else {
         printf("Solved sudoku:\n");
@@ -64,9 +66,9 @@ void SolveSudoku(int* boardAsInt) {
         /* Solving START */
         SolveRows(boardAsInt);
         SolveCols(boardAsInt);
-        for (int y = 0; y <= 54; y += 27) {
-            for (int x = 0; x <= 6; x += 3) {
-                SolveSquare(boardAsInt, y, x);
+        for (int y = 0; y < 3; y++) {
+            for (int x = 0; x < 3; x++) {
+                SolveSquare(boardAsInt, y * 27, x * 3); /* 27 because 3 rows * 9 cols */
             }
         }
         /* Solving END */
@@ -161,6 +163,7 @@ void SolveSquare(int* boardAsInt, int squareY, int squareX) {
     }
 }
 
+// Check if a number exists in a square
 int IsInSquare(int* boardAsInt, int squarePosition, int number) {
     for (int y = 0; y < 3; y++) {
         for (int x = 0; x < 3; x++) {
@@ -172,6 +175,7 @@ int IsInSquare(int* boardAsInt, int squarePosition, int number) {
     return 0;
 }
 
+// Check if a number exists in a row
 int IsInRow(int* boardAsInt, int row, int number) {
     for (int i = 0; i < 9; i++) {
         if (*(boardAsInt + (row + i)) == number) {
@@ -181,6 +185,7 @@ int IsInRow(int* boardAsInt, int row, int number) {
     return 0;
 }
 
+// Check if a number exists in a column
 int IsInCol(int* boardAsInt, int col, int number) {
     for (int i = 0; i < 9; i++) {
         if (*(boardAsInt + (i * 9 + col)) == number) {
@@ -190,6 +195,7 @@ int IsInCol(int* boardAsInt, int col, int number) {
     return 0;
 }
 
+// Check in how many places can a given number go to in a given square
 int ViableNumberOptionsInSquare(int* boardAsInt, int squareY, int squareX, int number) {
     int n = 0;
     for (int y = 0; y < 3; y++) {
