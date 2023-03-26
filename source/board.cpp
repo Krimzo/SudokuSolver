@@ -1,8 +1,5 @@
 #include "board.h"
 
-#include <iostream>
-#include <sstream>
-
 
 board::board(const std::string& data)
 {
